@@ -1,0 +1,34 @@
+{% for message in pre_instructions -%}
+{% if message.image_url -%}
+- role: system
+  content:
+    - type: image_url
+      image_url:
+        url: {{ message.image_url }}
+        detail: low
+    - type: text
+      text: {{ message.text }}
+{% else -%}
+- role: system
+  content: {{ message.text }}
+{% endif -%}
+{% endfor -%}
+{% for message in messages -%}
+{% if message.image_url -%}
+- role: {{ message.role }}
+  content:
+    - type: image_url
+      image_url:
+        url: {{ message.image_url }}
+        detail: low
+    - type: text
+      text: {{ message.text }}
+{% else -%}
+- role: {{ message.role }}
+  content: {{ message.text }}
+{% endif -%}
+{% endfor -%}
+{% for message in post_instructions -%}
+- role: system
+  content: {{ message.text }}
+{% endfor -%}

@@ -1,0 +1,46 @@
+[
+  {
+    "role": "system",
+    "content": "This is the pre instructions system message."
+  },
+  {
+    "role": "system",
+    "content": [
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "https://example.com/system_image.png",
+          "detail": "low"
+        }
+      },
+      {
+        "type": "text",
+        "text": "This is the pre instructions image system message text."
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": "Hello User!"
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "https://example.com/user_image.png",
+          "detail": "low"
+        }
+      },
+      {
+        "type": "text",
+        "text": "Hello Assistant!"
+      }
+    ]
+  },
+  {
+    "role": "system",
+    "content": "This is the post instructions system message."
+  }
+]
