@@ -1,4 +1,5 @@
-{% for message in pre_instructions -%}
+---
+{% for message in vars.pre_instructions -%}
 {% if message.image_url -%}
 - role: system
   content:
@@ -13,7 +14,7 @@
   content: {{ message.text }}
 {% endif -%}
 {% endfor -%}
-{% for message in messages -%}
+{% for message in context.messages -%}
 {% if message.image_url -%}
 - role: {{ message.role }}
   content:
@@ -28,7 +29,7 @@
   content: {{ message.text }}
 {% endif -%}
 {% endfor -%}
-{% for message in post_instructions -%}
+{% for message in vars.post_instructions -%}
 - role: system
   content: {{ message.text }}
 {% endfor -%}

@@ -6,10 +6,12 @@ name = "pypi"
 [packages]
 jinja2 = "*"
 pyyaml = "*"
+openai = "*"
 
 [dev-packages]
 pytest = "*"
 pytest-icdiff = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.10"
