@@ -1,7 +1,6 @@
 import pytest
 
-from src.executor import execute
-from src.updaters import chat_updater
+from src.renderer import render
 
 
 @pytest.fixture
@@ -13,8 +12,13 @@ def template_str():
 @pytest.fixture
 def vars():
     return {
+        "list_of_things": ["thing1", "thing2", "thing3"],
+        "system_message": "This is the pre instructions system message.\n"
+        "{%- for thing in list_of_things %}\n"
+        "  - {{ thing }}\n"
+        "{%- endfor %}",
         "pre_instructions": [
-            {"text": "This is the pre instructions system message."},
+            {"text": "{{ system_message }}"},
             {
                 "image_url": "https://example.com/system_image.png",
                 "text": "This is the pre instructions image system message text.",
@@ -23,12 +27,6 @@ def vars():
         "post_instructions": [
             {"text": "This is the post instructions system message."}
         ],
-    }
-
-
-@pytest.fixture
-def context():
-    return {
         "messages": [
             {"role": "assistant", "text": "Hello User!"},
             {
@@ -36,14 +34,20 @@ def context():
                 "text": "Hello Assistant!",
                 "image_url": "https://example.com/user_image.png",
             },
-        ]
+        ],
     }
 
 
 @pytest.fixture
 def target_messages():
     return [
-        {"role": "system", "content": "This is the pre instructions system message."},
+        {
+            "role": "system",
+            "content": "This is the pre instructions system message.\n"
+            "  - thing1\n"
+            "  - thing2\n"
+            "  - thing3",
+        },
         {
             "role": "system",
             "content": [
@@ -78,23 +82,6 @@ def target_messages():
     ]
 
 
-@pytest.fixture
-def mock_openai(mocker):
-    mock_create = mocker.Mock(
-        return_value=mocker.Mock(
-            choices=[mocker.Mock(message=mocker.Mock(content="AI response"))]
-        )
-    )
-    return mocker.patch(
-        "openai.OpenAI",
-        return_value=mocker.Mock(
-            chat=mocker.Mock(completions=mocker.Mock(create=mock_create))
-        ),
-    )
-
-
-def test_execute_chat(template_str, vars, context, target_messages, mock_openai):
-    output_json = execute(template_str, vars, context, chat_updater)
-    _, called_kwargs = mock_openai.return_value.chat.completions.create.call_args
-    assert called_kwargs["messages"] == target_messages
-    assert output_json["messages"][-1]["content"] == "AI response"
+def test_render(template_str, vars, target_messages):
+    rendered_template = render(template_str, vars)
+    assert rendered_template == target_messages
