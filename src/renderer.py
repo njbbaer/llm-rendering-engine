@@ -2,32 +2,38 @@ import jinja2
 import yaml
 
 
-def render(template_str, vars):
-    for _ in range(10):
-        rendered_vars = _deep_render_vars(vars)
-        if rendered_vars == vars:
-            break
-        vars = rendered_vars
-    else:
-        raise RuntimeError("Too many iterations")
-    rendered_template = jinja2.Template(template_str).render(vars)
-    return yaml.safe_load(rendered_template)
+class Renderer:
+    def __init__(self, vars):
+        self.vars = vars
+        self._render_vars()
 
+    def render(self, template_str):
+        rendered_str = jinja2.Template(template_str).render(self.vars)
+        return yaml.safe_load(rendered_str)
 
-def _deep_render_vars(vars, obj=None):
-    if obj is None:
-        obj = vars
+    def _render_vars(self):
+        for _ in range(10):
+            rendered_vars = self._deep_render_vars()
+            if rendered_vars == self.vars:
+                break
+            self.vars = rendered_vars
+        else:
+            raise RuntimeError("Too many iterations")
 
-    if isinstance(obj, dict):
-        return {key: _deep_render_vars(vars, value) for key, value in obj.items()}
-    elif isinstance(obj, list):
-        return [_deep_render_vars(vars, item) for item in obj]
-    elif isinstance(obj, str) and _contains_jinja(obj):
-        return jinja2.Template(obj).render(vars)
-    else:
-        return obj
+    def _deep_render_vars(self, obj=None):
+        if obj is None:
+            obj = self.vars
 
+        if isinstance(obj, dict):
+            return {key: self._deep_render_vars(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [self._deep_render_vars(item) for item in obj]
+        elif isinstance(obj, str) and self._has_jinja(obj):
+            return jinja2.Template(obj).render(self.vars)
+        else:
+            return obj
 
-def _contains_jinja(s):
-    delimiters = ["{{", "}}", "{%", "%}", "{#", "#}"]
-    return any(d in s for d in delimiters)
+    @staticmethod
+    def _has_jinja(s):
+        delimiters = ["{{", "}}", "{%", "%}", "{#", "#}"]
+        return any(d in s for d in delimiters)

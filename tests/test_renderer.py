@@ -1,6 +1,6 @@
 import pytest
 
-from src.renderer import render
+from src.renderer import Renderer
 
 
 @pytest.fixture
@@ -83,5 +83,5 @@ def target_messages():
 
 
 def test_render(template_str, vars, target_messages):
-    rendered_template = render(template_str, vars)
+    rendered_template = Renderer(vars).render(template_str)
     assert rendered_template == target_messages
