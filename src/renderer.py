@@ -25,4 +25,4 @@ def _deep_render_vars(vars, obj=None):
     elif isinstance(obj, str):
         return jinja2.Template(obj).render(vars)
     else:
-        raise ValueError(f"Unknown type: {type(obj)}")
+        return obj
