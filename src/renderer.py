@@ -22,7 +22,12 @@ def _deep_render_vars(vars, obj=None):
         return {key: _deep_render_vars(vars, value) for key, value in obj.items()}
     elif isinstance(obj, list):
         return [_deep_render_vars(vars, item) for item in obj]
-    elif isinstance(obj, str):
+    elif isinstance(obj, str) and _contains_jinja(obj):
         return jinja2.Template(obj).render(vars)
     else:
         return obj
+
+
+def _contains_jinja(s):
+    delimiters = ["{{", "}}", "{%", "%}", "{#", "#}"]
+    return any(d in s for d in delimiters)
