@@ -3,6 +3,8 @@ import yaml
 
 
 class Renderer:
+    MAX_ITERATIONS = 99
+
     def __init__(self, vars):
         self.vars = vars
         self._render_vars()
@@ -12,13 +14,13 @@ class Renderer:
         return yaml.safe_load(rendered_str)
 
     def _render_vars(self):
-        for _ in range(10):
+        for _ in range(self.MAX_ITERATIONS):
             rendered_vars = self._deep_render_vars()
             if rendered_vars == self.vars:
                 break
             self.vars = rendered_vars
         else:
-            raise RuntimeError("Too many iterations")
+            raise RuntimeError("Too many iterations. Circular reference?")
 
     def _deep_render_vars(self, obj=None):
         if obj is None:
